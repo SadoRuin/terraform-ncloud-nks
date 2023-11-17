@@ -30,12 +30,8 @@ resource "ncloud_nks_cluster" "this" {
   ip_acl_default_action = var.ip_acl_default_action
   ip_acl                = var.ip_acl
 
-  dynamic "log" {
-    for_each = var.audit_log ? toset([0]) : toset([])
-
-    content {
-      audit = var.audit_log
-    }
+  log {
+    audit = var.audit_log
   }
 
   dynamic "oidc" {
