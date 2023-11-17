@@ -124,9 +124,9 @@ variable "node_pools" {
     subnet_id_list     = list(string)              # Node Pool에서 사용할 Subnet ID 리스트
     autoscale = optional(object({                  # Node Pool Auto Scaling 설정
       enabled = bool                               # Auto Scaling 사용 여부
-      max     = number                             # Auto Scaling 최대 노드 수
       min     = number                             # Auto Scaling 최소 노드 수
-    }), null)
+      max     = number                             # Auto Scaling 최대 노드 수
+    }), { enabled = false, min = 0, max = 0 })
   }))
   default = []
 }

@@ -75,19 +75,10 @@ resource "ncloud_nks_node_pool" "this" {
   product_code   = data.ncloud_server_product.server_product[each.key].id
   software_code  = "SW.VSVR.OS.LNX64.UBNTU.SVR${each.value.sw_ver}.WRKND.B050"
   subnet_no_list = each.value.subnet_id_list
-
-  dynamic "autoscale" {
-    for_each = (
-      each.value.autoscale != null
-      ? toset(values(each.value.autoscale))
-      : toset([])
-    )
-
-    content {
-      enabled = autoscale.value.enabled
-      max     = autoscale.value.max
-      min     = autoscale.value.min
-    }
+  autoscale {
+    enabled = each.value.autoscale.enabled
+    min     = each.value.autoscale.min
+    max     = each.value.autoscale.max
   }
 }
 
