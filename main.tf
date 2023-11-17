@@ -70,7 +70,11 @@ resource "ncloud_nks_node_pool" "this" {
 
   cluster_uuid   = ncloud_nks_cluster.this.id
   node_pool_name = each.value.node_pool_name
-  k8s_version    = each.value.k8s_version != null ? "${each.value.k8s_version}-nks.1" : null
+  k8s_version = (
+    each.value.k8s_version != null
+    ? "${each.value.k8s_version}-nks.1"
+    : ncloud_nks_cluster.this.k8s_version
+  )
   node_count     = each.value.node_count
   product_code   = data.ncloud_server_product.server_product[each.key].id
   software_code  = "SW.VSVR.OS.LNX64.UBNTU.SVR${each.value.sw_ver}.WRKND.B050"
