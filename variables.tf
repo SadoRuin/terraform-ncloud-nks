@@ -114,7 +114,6 @@ variable "oidc" {
 variable "node_pools" {
   description = "NKS Cluster Node Pool 리스트"
   type = list(object({
-    cluster_id         = string                    # NKS Cluster ID(UUID)
     node_pool_name     = string                    # Node Pool 이름
     k8s_version        = optional(string)          # Node Pool Kubernetes 버전 (Upgrade만 가능)
     node_count         = number                    # Node Pool 노드 수

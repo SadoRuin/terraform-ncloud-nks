@@ -16,7 +16,7 @@ locals {
 
 resource "ncloud_nks_cluster" "this" {
   name                 = var.name
-  k8s_version          = "${var.k8s_version}-nks.1"
+  k8s_version          = var.k8s_version != null ? "${var.k8s_version}-nks.1" : null
   kube_network_plugin  = var.kube_network_plugin
   vpc_no               = var.vpc_id
   zone                 = var.zone
@@ -74,7 +74,7 @@ resource "ncloud_nks_node_pool" "this" {
 
   cluster_uuid   = ncloud_nks_cluster.this.id
   node_pool_name = each.value.node_pool_name
-  k8s_version    = "${each.value.k8s_version}-nks.1"
+  k8s_version    = each.value.k8s_version != null ? "${each.value.k8s_version}-nks.1" : null
   node_count     = each.value.node_count
   product_code   = data.ncloud_server_product.server_product[each.key].id
   software_code  = "SW.VSVR.OS.LNX64.UBNTU.SVR${each.value.sw_ver}.WRKND.B050"
