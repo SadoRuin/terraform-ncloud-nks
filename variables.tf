@@ -121,7 +121,7 @@ variable "node_pools" {
     product_generation = optional(string, "G2")    # Node 서버 세대 (G1 | G2)
     product_type       = string                    # Node 서버 타입 (High CPU | Standard | High Memory | CPU Intensive | GPU)
     product_name       = string                    # Node 서버 스펙 이름
-    subnet_no_list     = list(string)              # Node Pool에서 사용할 Subnet ID 리스트
+    subnet_id_list     = list(string)              # Node Pool에서 사용할 Subnet ID 리스트
     autoscale = optional(object({                  # Node Pool Auto Scaling 설정
       enabled = bool                               # Auto Scaling 사용 여부
       max     = number                             # Auto Scaling 최대 노드 수
