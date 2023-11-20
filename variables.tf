@@ -106,7 +106,7 @@ variable "oidc" {
     groups_claim    = optional(string) # 사용자의 groups로 사용할 claim
     username_prefix = optional(string) # 기존 username(예: system:users)과의 충돌을 방지하기 위해 Username claim앞에 접두사가 추가
     groups_prefix   = optional(string) # 기존 groups(예: system:group)과의 충돌을 방지하기 위해 Groups claim 앞에 접두사가 추가
-    required_claim  = optional(string) #  ID 토큰에 필수 claim을 지정하는 key=value 쌍. ','로 구분하여 여러 claim을 지정
+    required_claim  = optional(string) # ID 토큰에 필수 claim을 지정하는 key=value 쌍. ','로 구분하여 여러 claim을 지정
   })
   default = null
 }
@@ -115,7 +115,7 @@ variable "node_pools" {
   description = "NKS Cluster Node Pool 리스트"
   type = list(object({
     node_pool_name     = string                    # Node Pool 이름
-    k8s_version        = optional(string)          # Node Pool Kubernetes 버전 (Upgrade만 가능)
+    k8s_version        = optional(string)          # Node Pool Kubernetes 버전 (Upgrade만 가능, 미입력시 Cluster 버전 사용)
     node_count         = number                    # Node Pool 노드 수
     ubuntu_version     = optional(string, "20.04") # Node Pool Ubuntu 버전 (16.04 | 18.04 | 20.04)
     product_generation = optional(string, "G2")    # Node 서버 세대 (G1 | G2)
