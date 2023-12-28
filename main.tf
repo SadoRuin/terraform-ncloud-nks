@@ -16,6 +16,7 @@ locals {
 
 resource "ncloud_nks_cluster" "this" {
   name                 = var.name
+  hypervisor_code      = var.hypervisor_code
   k8s_version          = var.k8s_version != null ? "${var.k8s_version}-nks.1" : null
   kube_network_plugin  = var.kube_network_plugin
   vpc_no               = var.vpc_id
@@ -76,27 +77,47 @@ resource "ncloud_nks_node_pool" "this" {
     : ncloud_nks_cluster.this.k8s_version
   )
   node_count     = each.value.node_count
-  product_code   = data.ncloud_server_product.server_product[each.key].id
-  software_code  = "SW.VSVR.OS.LNX64.UBNTU.SVR${each.value.sw_ver}.WRKND.B050"
+  product_code   = data.ncloud_nks_server_products.server_product[each.key].products[0].value
+  software_code  = data.ncloud_nks_server_images.server_image[each.key].images[0].value
   subnet_no_list = each.value.subnet_id_list
   autoscale {
     enabled = each.value.autoscale.enabled
     min     = each.value.autoscale.min
     max     = each.value.autoscale.max
   }
+  dynamic "label" {
+    for_each = each.value.labels != null ? each.value.labels : toset([])
+
+    content {
+      key   = label.value.key
+      value = label.value.value
+    }
+  }
+
+  dynamic "taint" {
+    for_each = each.value.taints != null ? each.value.taints : toset([])
+
+    content {
+      key    = taint.value.key
+      value  = taint.value.value
+      effect = taint.value.effect
+    }
+  }
 }
+
 
 
 ################################################################################
 # Server Image
 ################################################################################
 
-data "ncloud_server_image" "server_image" {
+data "ncloud_nks_server_images" "server_image" {
   for_each = local.node_pools
 
   filter {
-    name   = "product_name"
+    name   = "label"
     values = ["ubuntu-${each.value.ubuntu_version}"]
+    regex  = true
   }
 }
 
@@ -115,21 +136,18 @@ locals {
   }
 }
 
-data "ncloud_server_product" "server_product" {
+data "ncloud_nks_server_products" "server_product" {
   for_each = local.node_pools
 
-  server_image_product_code = data.ncloud_server_image.server_image[each.key].id
+  software_code = data.ncloud_nks_server_images.server_image[each.key].images[0].value
+  zone          = var.zone
 
-  filter {
-    name   = "generation_code"
-    values = [upper(each.value.product_generation)]
-  }
   filter {
     name   = "product_type"
     values = [local.product_type[each.value.product_type]]
   }
   filter {
-    name   = "product_name"
+    name   = "label"
     values = [each.value.product_name]
   }
 }

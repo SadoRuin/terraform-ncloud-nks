@@ -3,6 +3,12 @@ variable "name" {
   type        = string
 }
 
+variable "hypervisor_code" {
+  description = "NKS Cluster Hypervisor (XEN | RHV)"
+  type        = string
+  default     = null
+}
+
 variable "k8s_version" {
   description = "NKS Cluster Kubernetes 버전 (Upgrade만 가능)"
   type        = string
@@ -50,7 +56,7 @@ variable "lb_private_subnet_id" {
 }
 
 variable "lb_public_subnet_id" {
-  description = "NKS Cluster에서 사용할 Public LB Subnet ID (SGN, JPN 리전에서만 지원)"
+  description = "NKS Cluster에서 사용할 Public LB Subnet ID (Public 사이트 KR, SG, JP 리전에서만 지원)"
   type        = string
   default     = null
 }
@@ -114,19 +120,27 @@ variable "oidc" {
 variable "node_pools" {
   description = "NKS Cluster Node Pool 리스트"
   type = list(object({
-    node_pool_name     = string                    # Node Pool 이름
-    k8s_version        = optional(string)          # Node Pool Kubernetes 버전 (Upgrade만 가능, 미입력시 Cluster 버전 사용)
-    node_count         = number                    # Node Pool 노드 수
-    ubuntu_version     = optional(string, "20.04") # Node Pool Ubuntu 버전 (16.04 | 18.04 | 20.04)
-    product_generation = optional(string, "G2")    # Node 서버 세대 (G1 | G2)
-    product_type       = string                    # Node 서버 타입 (High CPU | Standard | High Memory | CPU Intensive | GPU)
-    product_name       = string                    # Node 서버 스펙 이름
-    subnet_id_list     = list(string)              # Node Pool에서 사용할 Subnet ID 리스트
-    autoscale = optional(object({                  # Node Pool Auto Scaling 설정
-      enabled = bool                               # Auto Scaling 사용 여부
-      min     = number                             # Auto Scaling 최소 노드 수
-      max     = number                             # Auto Scaling 최대 노드 수
+    node_pool_name = string                    # Node Pool 이름
+    k8s_version    = optional(string)          # Node Pool Kubernetes 버전 (Upgrade만 가능, 미입력시 Cluster 버전 사용)
+    node_count     = number                    # Node Pool 노드 수
+    ubuntu_version = optional(string, "20.04") # Node Pool Ubuntu 버전 (18.04 | 20.04)
+    product_type   = string                    # Node 서버 타입 (High CPU | Standard | High Memory | CPU Intensive | GPU)
+    product_name   = string                    # Node 서버 스펙 이름
+    subnet_id_list = list(string)              # Node Pool에서 사용할 Subnet ID 리스트
+    autoscale = optional(object({              # Node Pool Auto Scaling 설정
+      enabled = bool                           # Auto Scaling 사용 여부
+      min     = number                         # Auto Scaling 최소 노드 수
+      max     = number                         # Auto Scaling 최대 노드 수
     }), { enabled = false, min = 0, max = 0 })
+    labels = optional(list(object({ # Node Pool 노드 레이블 설정
+      key   = string                # 레이블 키
+      value = string                # 레이블 값
+    })))
+    taints = optional(list(object({ # Node Pool 노드 테인트 설정
+      key    = string               # 테인트 키
+      value  = string               # 테인트 값
+      effect = string               # 테인트 효과 (NoSchedule | PreferNoSchedule | NoExecute)
+    })))
   }))
   default = []
 }

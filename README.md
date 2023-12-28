@@ -57,6 +57,7 @@ module "nks" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | name | NKS Cluster 이름 | `string` | - | yes |
+| hypervisor_code | NKS Cluster Hypervisor (XEN \| RHV) | `string` | `null` | no |
 | k8s_version | NKS Cluster Kubernetes 버전 (Upgrade만 가능, 미입력시 최신버전 사용) | `string` | `null` | no |
 | kube_network_plugin | NKS CNI 플러그인 (cilium 만 존재) | `string` | `"cilium"` | no |
 | vpc_id | NKS Cluster를 생성할 VPC ID | `string` | - | yes |
@@ -64,7 +65,7 @@ module "nks" {
 | is_public_network | NKS Cluster Public Network 사용 여부 | `bool` | `false` | no |
 | subnet_id_list | NKS Cluster에서 사용할 Subnet ID 리스트<br>- IP 대역(10.0.0.0/8,172.16.0.0/12,192.168.0.0/16) 내에서 /17~/26 범위의 Subnet 선택<br>- Docker Bridge 대역의 충돌을 방지하기 위해 172.17.0.0/16 범위 내의 Subnet은 선택 불가 | `list(string)` | - | yes |
 | lb_private_subnet_id | NKS Cluster에서 사용할 Private LB Subnet ID<br>- IP 대역(10.0.0.0/8,172.16.0.0/12,192.168.0.0/16) 내에서 /17~/26 범위의 Subnet 선택<br>- Docker Bridge 대역의 충돌을 방지하기 위해 172.17.0.0/16 범위 내의 Subnet은 선택 불가 | `string` | - | yes |
-| lb_public_subnet_id | NKS Cluster에서 사용할 Public LB Subnet ID (SGN, JPN 리전에서만 지원) | `string` | `null` | no |
+| lb_public_subnet_id | NKS Cluster에서 사용할 Public LB Subnet ID (Public 사이트 KR, SG, JP 리전에서만 지원) | `string` | `null` | no |
 | maximum_node_count | NKS Cluster 최대 노드 수 (10 \| 50) | `number` | `10` | no |
 | audit_log | NKS Cluster 로그 수집 여부 | `bool` | `false` | no |
 | login_key_name | NKS Cluster 인증키 이름 | `string` | - | yes |
@@ -103,12 +104,13 @@ module "nks" {
 | node_pool_name | Node Pool 이름 | `string` | - | yes |
 | k8s_version | Node Pool Kubernetes 버전 (Upgrade만 가능, 미입력시 Cluster 버전 사용) | `string` | - | no |
 | node_count | Node Pool 노드 수 | `number` | - | yes |
-| ubuntu_version | Node Pool Ubuntu 버전 (16.04 \| 18.04 \| 20.04) | `string` | `"20.04"` | no |
-| product_generation | Node 서버 세대 (G1 \| G2) | `string` | `"G2"` | no |
+| ubuntu_version | Node Pool Ubuntu 버전 (18.04 \| 20.04) | `string` | `"20.04"` | no |
 | product_type | Node 서버 타입 (High CPU \| Standard \| High Memory \| CPU Intensive \| GPU) | `string` | - | yes |
 | product_name | Node 서버 스펙 이름 | `string` | - | yes |
 | subnet_id_list | Node Pool에서 사용할 Subnet ID 리스트 | `list(string)` | - | yes |
 | [autoscale](#autoscale_inputs) | Node Pool Auto Scaling 설정 | <pre>object({<br>  enabled = bool<br>  min     = number<br>  max     = number<br>})</pre> | <pre>{<br>  enabled = false<br>  min = 0<br>  max = 0<br>}</pre> | no |
+| [labels](#labels_inputs) | Node Pool 노드 라벨 설정 | <pre>list(object({<br>  key   = string<br>  value = string<br>}))</pre> | `{}` | no |
+| [taints](#taints_inputs) | Node Pool 노드 테인트 설정 | <pre>list(object({<br>  key    = string<br>  value  = string<br>  effect = string<br>}))</pre> | `{}` | no |
 
 - <a name="autoscale_inputs"></a> [**Autosacle Inputs**](#node-pool-inputs)
 
@@ -118,6 +120,23 @@ module "nks" {
   | enabled | Auto Scaling 사용 여부 | `bool` | - | yes |
   | min | Auto Scaling 최소 노드 수 | `number` | - | yes |
   | max | Auto Scaling 최대 노드 수 | `number` | - | yes |
+
+- <a name="labels_inputs"></a> [**Labels Inputs**](#node-pool-inputs)
+
+  <!-- prettier-ignore -->
+  | Name | Description | Type | Default | Required |
+  |------|-------------|------|---------|:--------:|
+  | key | 라벨 키 | `string` | - | yes |
+  | value | 라벨 값 | `string` | - | yes |
+
+- <a name="taints_inputs"></a> [**Taints Inputs**](#node-pool-inputs)
+
+  <!-- prettier-ignore -->
+  | Name | Description | Type | Default | Required |
+  |------|-------------|------|---------|:--------:|
+  | key | 테인트 키 | `string` | - | yes |
+  | value | 테인트 값 | `string` | - | yes |
+  | effect | 테인트 효과 (NoSchedule \| PreferNoSchedule \| NoExecute) | `string` | - | yes |
 
 ## [Outputs](#table-of-contents)
 
