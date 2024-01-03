@@ -14,10 +14,24 @@ locals {
   )
 }
 
+data "ncloud_nks_versions" "nks_version" {
+  count = var.k8s_version != null ? 1 : 0
+
+  filter {
+    name   = "value"
+    values = ["var.k8s_version"]
+    regex  = true
+  }
+}
+
 resource "ncloud_nks_cluster" "this" {
-  name                 = var.name
-  hypervisor_code      = var.hypervisor_code
-  k8s_version          = var.k8s_version != null ? "${var.k8s_version}-nks.1" : null
+  name            = var.name
+  hypervisor_code = var.hypervisor_code
+  k8s_version = (
+    var.k8s_version != null
+    ? data.ncloud_nks_versions.nks_version[0].versions[0].value
+    : null
+  )
   kube_network_plugin  = var.kube_network_plugin
   vpc_no               = var.vpc_id
   zone                 = var.zone

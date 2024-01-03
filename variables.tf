@@ -56,7 +56,7 @@ variable "lb_private_subnet_id" {
 }
 
 variable "lb_public_subnet_id" {
-  description = "NKS Cluster에서 사용할 Public LB Subnet ID (Public 사이트 KR, SG, JP 리전에서만 지원)"
+  description = "NKS Cluster에서 사용할 Public LB Subnet ID (Public 사이트 KR, SG, JP 리전에서 필수)"
   type        = string
   default     = null
 }

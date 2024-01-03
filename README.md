@@ -65,7 +65,7 @@ module "nks" {
 | is_public_network | NKS Cluster Public Network 사용 여부 | `bool` | `false` | no |
 | subnet_id_list | NKS Cluster에서 사용할 Subnet ID 리스트<br>- IP 대역(10.0.0.0/8,172.16.0.0/12,192.168.0.0/16) 내에서 /17~/26 범위의 Subnet 선택<br>- Docker Bridge 대역의 충돌을 방지하기 위해 172.17.0.0/16 범위 내의 Subnet은 선택 불가 | `list(string)` | - | yes |
 | lb_private_subnet_id | NKS Cluster에서 사용할 Private LB Subnet ID<br>- IP 대역(10.0.0.0/8,172.16.0.0/12,192.168.0.0/16) 내에서 /17~/26 범위의 Subnet 선택<br>- Docker Bridge 대역의 충돌을 방지하기 위해 172.17.0.0/16 범위 내의 Subnet은 선택 불가 | `string` | - | yes |
-| lb_public_subnet_id | NKS Cluster에서 사용할 Public LB Subnet ID (Public 사이트 KR, SG, JP 리전에서만 지원) | `string` | `null` | no |
+| lb_public_subnet_id | NKS Cluster에서 사용할 Public LB Subnet ID (Public 사이트 KR, SG, JP 리전에서 필수) | `string` | - | yes |
 | maximum_node_count | NKS Cluster 최대 노드 수 (10 \| 50) | `number` | `10` | no |
 | audit_log | NKS Cluster 로그 수집 여부 | `bool` | `false` | no |
 | login_key_name | NKS Cluster 인증키 이름 | `string` | - | yes |
